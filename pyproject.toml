@@ -6,6 +6,8 @@ authors = ["Benito Buchheim <github.benito.2017@buchheims.de>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pyhafas = "^0.3.0"
+cachetools = "^5.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
