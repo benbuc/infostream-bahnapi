@@ -22,7 +22,7 @@ def get_arrivals():
         if is_station_of_interest(station)
     ]
 
-    all_arrivals = {}
+    all_arrivals = []
     for station in stations:
         arrivals_of_interest = [
             arrival
@@ -31,16 +31,23 @@ def get_arrivals():
             )
             if is_arrival_of_interest(arrival)
         ]
-        all_arrivals[station.name] = []
+        arrivals_for_station = []
         for arrival in arrivals_of_interest:
-            all_arrivals[station.name].append(
-                {
-                    "name": arrival.name,
-                    "scheduled": arrival.dateTime.isoformat(),
-                    "estimated": (arrival.dateTime + arrival.delay).isoformat(),
-                    "delay": arrival.delay.seconds,
-                }
-            )
+            arrival_dict = {
+                "name": arrival.name,
+                "scheduled": arrival.dateTime.isoformat(),
+            }
+            if arrival.delay:
+                arrival_dict["estimated"] = (
+                    arrival.dateTime + arrival.delay
+                ).isoformat()
+                arrival_dict["delay"] = arrival.delay.seconds
+
+            arrivals_for_station.append(arrival_dict)
+
+        all_arrivals.append(
+            {"station_name": station.name, "arrivals": arrivals_for_station}
+        )
 
     return all_arrivals
 
