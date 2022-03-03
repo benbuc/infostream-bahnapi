@@ -59,7 +59,8 @@ def get_arrivals(duration=15):
 
     return {
         "all_arrivals": all_arrivals,
-        "last_update": datetime.datetime.now(),
+        "last_update": datetime.datetime.now()
+        + datetime.timedelta(hours=1),  # weird fix! was wrong on server,
     }
 
 
