@@ -84,10 +84,15 @@ class Stations extends React.Component<IProps, IState> {
                                             datelabel = <Typography color={"#ff5722"}><del>{schedstring}</del> - {eststring} (+{delay})</Typography>
                                         }
                                         return (
-                                            <Box paddingBottom={1}>
-                                                <Typography>{arrival["name"]}</Typography>
-                                                <Typography>{datelabel}</Typography>
-                                            </Box>
+                                            <div style={{ "padding": "0 0 20px 0", "overflow": "auto" }}>
+                                                <div style={{ "width": "80%", "float": "left" }}>
+                                                    <Typography>{arrival["name"]}</Typography>
+                                                    <Typography>{datelabel}</Typography>
+                                                </div>
+                                                <div style={{ "width": "20%", "float": "left" }}>
+                                                    <Typography>{arrival["platform"]}</Typography>
+                                                </div>
+                                            </div>
                                         )
                                     })}
                                 </CardContent>
@@ -95,7 +100,7 @@ class Stations extends React.Component<IProps, IState> {
                         </Grid>
                     ))}
                 </Grid>
-            </Container>
+            </Container >
         )
     }
 }
