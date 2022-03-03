@@ -24,6 +24,7 @@ def get_arrivals(duration=15):
     ]
 
     all_arrivals = []
+    print(datetime.datetime.now())
     for station in stations:
         arrivals_of_interest = [
             arrival
