@@ -79,9 +79,9 @@ class Stations extends React.Component<IProps, IState> {
                                         const delay = arrival["delay"] / 60;
                                         var datelabel = <Typography color={"#4caf50"}>{schedstring}</Typography>
                                         if (delay > 0 && delay <= 5) {
-                                            datelabel = <Typography color={"#fcaf50"}>{schedstring} - {eststring} (+{delay})</Typography>
+                                            datelabel = <Typography color={"#fcaf50"}><del>{schedstring}</del> - {eststring} (+{delay})</Typography>
                                         } else if (delay > 5) {
-                                            datelabel = <Typography color={"#ff5722"}>{schedstring} - {eststring} (+{delay})</Typography>
+                                            datelabel = <Typography color={"#ff5722"}><del>{schedstring}</del> - {eststring} (+{delay})</Typography>
                                         }
                                         return (
                                             <Box paddingBottom={1}>
