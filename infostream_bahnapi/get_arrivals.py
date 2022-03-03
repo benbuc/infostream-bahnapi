@@ -3,7 +3,6 @@ from pyhafas.profile import DBProfile
 import datetime
 import json
 import cachetools.func
-import pytz
 
 
 def is_station_of_interest(station):
@@ -25,13 +24,13 @@ def get_arrivals(duration=15):
     ]
 
     all_arrivals = []
-    print(datetime.datetime.now().isoformat())
     for station in stations:
         arrivals_of_interest = [
             arrival
             for arrival in client.arrivals(
                 station=station,
-                date=datetime.datetime.now(tz=pytz.timezone("Europe/Berlin")),
+                date=datetime.datetime.now()
+                + datetime.timedelta(hours=1),  # weird fix! was wrong on server
                 duration=duration,
             )
             if is_arrival_of_interest(arrival)

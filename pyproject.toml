@@ -10,7 +10,6 @@ pyhafas = "^0.3.0"
 cachetools = "^5.0.0"
 fastapi = "^0.74.1"
 uvicorn = "^0.17.5"
-pytz = "^2021.3"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
