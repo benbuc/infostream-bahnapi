@@ -21,7 +21,7 @@ class Stations extends React.Component<IProps, IState> {
     }
 
     componentDidMount() {
-        axios.get(`http://localhost:8000`)
+        axios.get(`https://infostreamapi.benbuc.de`)
             .then(res => {
                 const stations = res.data;
                 //console.log(stations);
@@ -30,13 +30,6 @@ class Stations extends React.Component<IProps, IState> {
     }
 
     render() {
-        this.state.stations.forEach(station => {
-            console.log(station);
-            console.log(station['station_name']);
-            Object.keys(station['arrivals']).forEach((key) => {
-                console.log(key);
-            })
-        });
         return (
             <Container maxWidth="md" component="main">
                 <Grid container spacing={5} alignItems="flex-start">
@@ -76,11 +69,5 @@ class Stations extends React.Component<IProps, IState> {
         )
     }
 }
-
-/*<ul>
-                {this.state.stations.map((station) => (
-                    <li>{station["station_name"]}</li>
-                ))}
-            </ul>*/
 
 export default Stations
