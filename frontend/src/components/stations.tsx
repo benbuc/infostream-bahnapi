@@ -1,14 +1,18 @@
 import React from 'react';
 
 import axios from 'axios';
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, Grid, Typography } from '@mui/material';
 import moment from 'moment';
+
+export const isDev = () => !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 
 interface IProps {
 
 }
 interface IState {
     stations: [];
+    last_update: Date;
+    loading: Boolean;
 }
 
 class Stations extends React.Component<IProps, IState> {
@@ -16,22 +20,43 @@ class Stations extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            stations: []
+            stations: [],
+            last_update: new Date(0),
+            loading: false,
         };
     }
+    intervalId: NodeJS.Timer;
 
     componentDidMount() {
-        axios.get(`https://infostreamapi.benbuc.de`)
+
+        this.intervalId = setInterval(() => { this.reloadData() }, 20000);
+        this.reloadData();
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.intervalId);
+    }
+
+    reloadData = () => {
+        this.setState({ loading: true });
+        axios.get(isDev() ? "http://localhost:8000/" : "https://infostreamapi.benbuc.de")
             .then(res => {
-                const stations = res.data;
-                //console.log(stations);
-                this.setState({ stations });
+                const stations = res.data['all_arrivals'];
+                const last_update = new Date(res.data['last_update']);
+                this.setState({ stations, last_update, loading: false });
             })
     }
 
     render() {
+        const primary_loading_indicator = () => {
+            if (this.state.loading && this.state.stations.length == 0) {
+                return <CircularProgress />
+            }
+        }
         return (
             <Container maxWidth="md" component="main">
+                <Typography>Last Update: {moment(this.state.last_update).format("DD.MM.YYYY HH:mm:ss")}</Typography>
+                {primary_loading_indicator()}
                 <Grid container spacing={5} alignItems="flex-start">
                     {this.state.stations.map((station) => (
                         <Grid item
@@ -48,15 +73,20 @@ class Stations extends React.Component<IProps, IState> {
                                 <CardContent>
                                     {Object.keys(station["arrivals"]).map((key) => {
                                         const arrival = station["arrivals"][key]
-                                        var dateString = "";
-                                        if (arrival["estimated"]) {
-                                            const estimated = new Date(arrival["estimated"])
-                                            dateString = " @ " + moment(estimated).format("hh:mm")
+                                        const estimated = new Date(arrival["estimated"])
+                                        const eststring = moment(estimated).format("HH:mm")
+                                        const schedstring = moment(arrival["scheduled"]).format("HH:mm")
+                                        const delay = arrival["delay"] / 60;
+                                        var datelabel = <Typography color={"#4caf50"}>{schedstring}</Typography>
+                                        if (delay > 0 && delay <= 5) {
+                                            datelabel = <Typography color={"#fcaf50"}>{schedstring} - {eststring} (+{delay})</Typography>
+                                        } else if (delay > 5) {
+                                            datelabel = <Typography color={"#ff5722"}>{schedstring} - {eststring} (+{delay})</Typography>
                                         }
                                         return (
                                             <Box paddingBottom={1}>
-                                                <p>{arrival["name"]}{dateString}</p>
-                                                <p>Sched: {moment(arrival["scheduled"]).format("hh:mm")}</p>
+                                                <Typography>{arrival["name"]}</Typography>
+                                                <Typography>{datelabel}</Typography>
                                             </Box>
                                         )
                                     })}

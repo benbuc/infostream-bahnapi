@@ -10,10 +10,11 @@ def is_station_of_interest(station):
 
 
 def is_arrival_of_interest(arrival):
+    return True
     return "IC" in arrival.name
 
 
-def get_arrivals():
+def get_arrivals(duration=15):
     client = HafasClient(DBProfile())
 
     stations = [
@@ -27,7 +28,7 @@ def get_arrivals():
         arrivals_of_interest = [
             arrival
             for arrival in client.arrivals(
-                station=station, date=datetime.datetime.now(), duration=15
+                station=station, date=datetime.datetime.now(), duration=duration
             )
             if is_arrival_of_interest(arrival)
         ]
@@ -36,12 +37,16 @@ def get_arrivals():
             arrival_dict = {
                 "name": arrival.name,
                 "scheduled": arrival.dateTime.isoformat(),
+                "platform": arrival.platform,
             }
             if arrival.delay:
                 arrival_dict["estimated"] = (
                     arrival.dateTime + arrival.delay
                 ).isoformat()
                 arrival_dict["delay"] = arrival.delay.seconds
+            else:
+                arrival_dict["estimated"] = arrival_dict["scheduled"]
+                arrival_dict["delay"] = 0
 
             arrivals_for_station.append(arrival_dict)
 
@@ -49,9 +54,16 @@ def get_arrivals():
             {"station_name": station.name, "arrivals": arrivals_for_station}
         )
 
-    return all_arrivals
+    return {
+        "all_arrivals": all_arrivals,
+        "last_update": datetime.datetime.now(),
+    }
 
 
 @cachetools.func.ttl_cache(maxsize=128, ttl=60)
 def get_cached_arrivals():
     return get_arrivals()
+
+
+if __name__ == "__main__":
+    get_arrivals()
