@@ -67,6 +67,7 @@ upcoming_arrivals = pd.DataFrame(arrival_table).sort_values(["Date", "Time"])
 new_arrivals = []
 
 # filter out existing arrivals and update delays
+# wks.unlink()
 for idx, row in upcoming_arrivals.iterrows():
     matching_row = (
         (current_df["Date"] == row["Date"])
@@ -75,7 +76,13 @@ for idx, row in upcoming_arrivals.iterrows():
     )
     if matching_row.any():
         logging.debug(f"Exists: ({row['Time']} - {row['ID']})")
-        print(matching_row.idxmax())
+        match_index = matching_row.idxmax() - 1
+        if row["Delay"] != current_df.iloc[match_index]["Delay"]:
+            logging.debug(f"Delay Changed for row {match_index + 1}")
+            wks.update_value(
+                (match_index, sheet_mapping["IsDelayed"] + 1), row["IsDelayed"]
+            )
+            wks.update_value((match_index, sheet_mapping["Delay"] + 1), row["Delay"])
     else:
         logging.debug(f"New: ({row['Time']} - {row['ID']})")
         new_arrivals.append(list(row))
@@ -84,5 +91,7 @@ for idx, row in upcoming_arrivals.iterrows():
 # add new arrivals
 if new_arrivals:
     wks.update_values((current_df.shape[0] + 2, 1), new_arrivals)
+
+# wks.link()
 
 sh[1].update_value("A1", datetime.datetime.now().strftime(DATETIME_FORMAT))
