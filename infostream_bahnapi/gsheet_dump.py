@@ -9,24 +9,12 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # authorization
 gc = pygsheets.authorize(service_file="credentials/creds.json")
 
-# column_mapping = [
-#    ("Status", 2),
-#    ("Date", 3),
-#    ("Time", 4),
-#    ("Type", 5),
-#    ("Station", 6),
-#    ("ID", 7),
-#    ("Description / Legend", 10),
-# ]
-
 station_mapping = {
     "Berlin Hbf": "Hbf (Train)",
     "Berlin Südkreuz": "Suedkreuz (Train)",
     "Berlin Ostbahnhof": "Ostbahnhof (Train)",
 }
 
-# Create empty dataframe
-# df = pd.DataFrame(columns=[c[0] for c in column_mapping])
 arrival_table = []
 
 arrival_data = get_arrivals(LOOKAHEAD * 60)
@@ -50,17 +38,10 @@ for station in all_arrivals:
             }
         )
 
-df = pd.DataFrame(arrival_table)
+df = pd.DataFrame(arrival_table).sort_values(["Date", "Time"])
 
 sh = gc.open("ua_arrival_times")
+
 wks = sh[0]
-
-# update the first sheet with df, starting at cell B2.
-print(df)
-
-# for mapping in column_mapping:
 wks.set_dataframe(df, (1, 1))
 wks.update_value("M1", datetime.datetime.now().strftime(DATETIME_FORMAT))
-
-# for mapping in column_mapping:
-#    wks.set_dataframe(df.filter([mapping[0]]), (1, mapping[1]))
