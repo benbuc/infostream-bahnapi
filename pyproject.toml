@@ -10,6 +10,8 @@ pyhafas = "^0.3.0"
 cachetools = "^5.0.0"
 fastapi = "^0.74.1"
 uvicorn = "^0.17.5"
+fuzzywuzzy = "^0.18.0"
+python-Levenshtein = "^0.12.2"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

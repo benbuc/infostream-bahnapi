@@ -3,15 +3,22 @@ from pyhafas.profile import DBProfile
 import datetime
 import json
 import cachetools.func
+from fuzzywuzzy import fuzz
 
 
 def is_station_of_interest(station):
     return station.name in ["Berlin Hbf", "Berlin Ostbahnhof", "Berlin Südkreuz"]
 
 
+with open("infostream_bahnapi/arrivals_of_interest.txt", "r") as f:
+    arrivals_of_interest = [line.strip() for line in f.readlines()]
+
+
 def is_arrival_of_interest(arrival):
-    return True
-    return "IC" in arrival.name
+    interest_score = max(
+        [fuzz.ratio(arrival.name, aoi) for aoi in arrivals_of_interest]
+    )
+    return interest_score > 95
 
 
 def get_arrivals(duration=15):
