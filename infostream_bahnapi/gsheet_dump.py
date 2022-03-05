@@ -3,6 +3,7 @@ import pandas as pd
 from infostream_bahnapi.get_arrivals import get_arrivals
 import datetime
 import logging
+import pathlib
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -21,7 +22,10 @@ sheet_mapping = {
 }
 
 # authorization
-gc = pygsheets.authorize(service_file="credentials/creds.json")
+gc = pygsheets.authorize(
+    service_file=pathlib.Path(__file__).parent.parent.absolute()
+    / "credentials/creds.json"
+)
 logging.info("Authorized Google Sheets Client")
 
 sh = gc.open("ua_arrival_times")
