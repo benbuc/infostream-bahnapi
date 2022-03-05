@@ -1,0 +1,1 @@
+*/5 * * * * /usr/local/bin/python /app/infostream_bahnapi/gsheet_dump.py >> /app/gsheet_dump.log 2>&1

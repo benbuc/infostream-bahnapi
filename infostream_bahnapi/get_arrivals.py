@@ -4,13 +4,16 @@ import datetime
 import json
 import cachetools.func
 from fuzzywuzzy import fuzz
+import pathlib
 
 
 def is_station_of_interest(station):
     return station.name in ["Berlin Hbf", "Berlin Ostbahnhof", "Berlin Südkreuz"]
 
 
-with open("infostream_bahnapi/arrivals_of_interest.txt", "r") as f:
+with open(
+    pathlib.Path(__file__).parent.absolute() / "arrivals_of_interest.txt", "r"
+) as f:
     arrivals_of_interest = [line.strip() for line in f.readlines()]
 
 

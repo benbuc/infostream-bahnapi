@@ -1,5 +1,6 @@
 FROM python:latest
 
+RUN apt-get update && apt-get -y install cron
 
 EXPOSE 8101
 WORKDIR /app
@@ -14,6 +15,13 @@ COPY ./pyproject.toml ./poetry.lock README.md /app/
 RUN poetry install --no-root --no-dev --no-interaction
 RUN pip install virtualenv
 COPY ./infostream_bahnapi /app/infostream_bahnapi
+COPY ./credentials /app/credentials
 ENV PYTHONPATH=/app
 RUN poetry install --no-dev --no-interaction --no-ansi
-CMD ["uvicorn", "infostream_bahnapi.main:app", "--host", "0.0.0.0", "--port", "8101"]
+
+COPY deployment/updater_cron /etc/cron.d/updater_cron
+RUN chmod 0644 /etc/cron.d/updater_cron
+RUN crontab /etc/cron.d/updater_cron
+RUN touch /app/gsheet_dump.log
+
+CMD cron && uvicorn infostream_bahnapi.main:app --host 0.0.0.0 --port 8101
